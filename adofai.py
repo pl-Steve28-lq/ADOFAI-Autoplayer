@@ -1,5 +1,5 @@
 from pynput.keyboard import Key, Controller
-import json
+import json, time
 
 class ADOFAI:
     def __init__(self, bpm = 100, pathdata = 'R'*9, offset = 0, bpmdata = {}):
@@ -8,12 +8,19 @@ class ADOFAI:
         self.pathdata = self.analyze(pathdata)
         self.sec = 60/bpm
         self.offset = offset/1000
+        self.tileInfo = {
+            'U' : 90,
+            'R' : 180,
+            'D' : 270,
+            'L' : 360,
+        } # TODO : Tile Angle Data
         self.length = len(pathdata.replace('!', ''))
 
     def start(self):
         print("[Start] BPM : " + str(self.bpm))
         self.kb.press(Key.space)
         self.kb.release(Key.space)
+        time.sleep(3 * self.sec)
 
     def changeBPM(self, newBPM):
         print("[Speed] BPM : " + str(self.bpm) + " => " + str(newBPM))
@@ -24,12 +31,12 @@ class ADOFAI:
         tile = 1
         while tile < self.length:
             print(self.pathdata[tile])
+            # TODO : Keyboard Press
             tile += 1
-            #TODO
         return None
 
     def analyze(self, pathdata):
-        #TODO
+        #TODO : Processing Midspin Tile, and calculate angle of each tiles.
         return None
     
 
