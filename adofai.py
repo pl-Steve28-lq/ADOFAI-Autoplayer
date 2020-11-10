@@ -6,6 +6,7 @@ class ADOFAI:
         self.kb = Controller()
         self.bpm = bpm
         self.pathdata = self.analyze(pathdata)
+        self.bpmdata = bpmdata
         self.sec = 60/bpm
         self.offset = offset/1000
         self.tileInfo = {
@@ -25,19 +26,29 @@ class ADOFAI:
     def changeBPM(self, newBPM):
         print("[Speed] BPM : " + str(self.bpm) + " => " + str(newBPM))
         self.bpm = newBPM
+        self.sec = 60/newBPM
 
     def startMacro(self):
         self.start()
         tile = 1
         while tile < self.length:
             print(self.pathdata[tile])
-            # TODO : Keyboard Press
+            delay = self.tileInfo[tile]/180
+            self.press(delay)
+            bpmcheck = self.bpmdata.get(tile, 0)
+            if bpmcheck != 0:
+                self.changeBPM(bpmcheck)
             tile += 1
         return None
 
     def analyze(self, pathdata):
         #TODO : Processing Midspin Tile, and calculate angle of each tiles.
         return None
+    
+    def press(self, delay, key='k'):
+        self.kb.press(key)
+        self.kb.release(key)
+        time.sleep(delay * self.sec)
     
 
 def autoplay(levelpath):
