@@ -41,13 +41,13 @@ class ADOFAI:
             time.sleep(delay * self.sec)
 
     def analyze(self, pathdata):
-        #180 90 0 270 270 180
-        
         processed = []
         for i in range(len(pathdata)-1):
             nowtile  = self.tileInfo[pathdata[i]]
             nexttile = self.tileInfo[pathdata[i+1]]
+            ######### TODO : ERROR #########
             angle = (nowtile-nexttile)%360
+            ######### TODO : ERROR #########
             processed.append(angle if angle != 0 else nowtile)
         #TODO : Processing Midspin Tile
         return processed + [self.tileInfo[pathdata[-1]]]
