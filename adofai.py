@@ -2,67 +2,56 @@ from pynput.keyboard import Key, Controller
 import json, time
 
 class ADOFAI:
-    def __init__(self, bpm = 100, pathdata = 'R'*9, offset = 0, bpmdata = {}):
+    def __init__(self, bpm = 100, pathdata = 'R'*9, offset = 0, eventdata = {}):
         self.kb = Controller()
         self.bpm = bpm
+        key = list("RWHQGqUoTEJpRAMCBYDVFZNxL")
+        self.tileInfo = {key[i] : 15*i for i in range(len(key))}
         self.pathdata = self.analyze(pathdata)
-        self.bpmdata = bpmdata
+        self.bpmdata = eventdata
         self.sec = 60/bpm
         self.offset = offset/1000
-        self.tileInfo = {
-            'U' : 90,
-            'R' : 180,
-            'D' : 270,
-            'L' : 360,
-        } # TODO : Tile Angle Data
-        self.length = len(pathdata.replace('!', ''))
+        self.length = len(self.pathdata)
+        self.twirled = 0
 
     def start(self):
         print("[Start] BPM : " + str(self.bpm))
         self.kb.press(Key.space)
         self.kb.release(Key.space)
-        time.sleep(3 * self.sec)
+        time.sleep(self.offset + 3 * self.sec + 1.25)
 
     def changeBPM(self, newBPM):
         print("[Speed] BPM : " + str(self.bpm) + " => " + str(newBPM))
+        print(self.sec)
         self.bpm = newBPM
         self.sec = 60/newBPM
 
     def startMacro(self):
+        print(self.sec)
         self.start()
-        tile = 1
+        tile = 0
         while tile < self.length:
-            print(self.pathdata[tile])
-            delay = self.tileInfo[tile]/180
-            self.press(delay)
+            delay = -0.1 + (360*self.twirled + (-2 * self.twirled + 1) * self.pathdata[tile])/180
+            self.press()
+            print(self.pathdata[tile], delay)
             bpmcheck = self.bpmdata.get(tile, 0)
             if bpmcheck != 0:
                 self.changeBPM(bpmcheck)
             tile += 1
-        return None
+            time.sleep(delay * self.sec)
 
     def analyze(self, pathdata):
-        #TODO : Processing Midspin Tile, and calculate angle of each tiles.
-        return None
+        #180 90 0 270 270 180
+        
+        processed = []
+        for i in range(len(pathdata)-1):
+            nowtile  = self.tileInfo[pathdata[i]]
+            nexttile = self.tileInfo[pathdata[i+1]]
+            angle = (nowtile-nexttile)%360
+            processed.append(angle if angle != 0 else nowtile)
+        #TODO : Processing Midspin Tile
+        return processed + [self.tileInfo[pathdata[-1]]]
     
-    def press(self, delay, key='k'):
+    def press(self, key='k'):
         self.kb.press(key)
         self.kb.release(key)
-        time.sleep(delay * self.sec)
-    
-
-def autoplay(levelpath):
-    with open(levelpath, encoding='utf-8-sig') as f:
-        ctx = json.loads(f.read())
-    settings = ctx['settings']
-    bpm = settings['bpm']
-    offset = settings['offset']
-    pathdata = ctx['pathData']
-    
-    action = ctx['actions']
-    actiondata = {i['floor'] : i.get('beatsPerMinute', 0) for i in action if i.get('beatsPerMinute', 0) != 0}
-
-    macro = ADOFAI(bpm, pathdata, offset, actiondata)
-    macro.startMacro()
-
-autoplay('./backup.adofai')
