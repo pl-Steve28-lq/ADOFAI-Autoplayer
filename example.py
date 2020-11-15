@@ -1,4 +1,5 @@
 from adofaimacro import autoplay
+import time
 
 path = './testlevel.adofai'
 
