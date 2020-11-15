@@ -8,7 +8,7 @@ class ADOFAI:
         key = list("RWHQGqUoTEJpRAMCBYDVFZNxL")
         self.tileInfo = {key[i] : 15*i for i in range(len(key))}
         self.pathdata = self.analyze(pathdata)
-        self.bpmdata = eventdata
+        self.eventdata = eventdata
         self.sec = 60/bpm
         self.offset = offset/1000
         self.length = len(self.pathdata)
@@ -34,9 +34,11 @@ class ADOFAI:
             delay = -0.1 + (360*self.twirled + (-2 * self.twirled + 1) * self.pathdata[tile])/180
             self.press()
             print(self.pathdata[tile], delay)
-            bpmcheck = self.bpmdata.get(tile, 0)
-            if bpmcheck != 0:
-                self.changeBPM(bpmcheck)
+            eventcheck = self.eventdata.get(tile, None)
+            if isinstance(eventcheck, int):
+                self.changeBPM(eventcheck)
+            if isinstance(eventcheck, str):
+                self.twirled = 1 - self.twirled
             tile += 1
             time.sleep(delay * self.sec)
 
@@ -45,10 +47,10 @@ class ADOFAI:
         for i in range(len(pathdata)-1):
             nowtile  = self.tileInfo[pathdata[i]]
             nexttile = self.tileInfo[pathdata[i+1]]
-            ######### TODO : ERROR #########
-            angle = (nowtile-nexttile)%360
-            ######### TODO : ERROR #########
-            processed.append(angle if angle != 0 else nowtile)
+            #### TODO : 실험 안해봄 ####
+            angle = 180 - nowtile + nexttile
+            #### TODO : 실험 안해봄 ####
+            processed.append(angle)
         #TODO : Processing Midspin Tile
         return processed + [self.tileInfo[pathdata[-1]]]
     
