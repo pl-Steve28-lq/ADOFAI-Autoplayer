@@ -35,15 +35,15 @@ class ADOFAI:
         
 
   class Tile(Util.Factory(
-    'Tile', ('angle', 'event', ('isMidspin', False))
+    'angle', 'event', ('isMidspin', False)
   )):
     def processAngle(self, other):
       Util.TODO()
 
   class Event:
-    class Twirl(Util.Factory('Twirl')): pass
-    class BPMSpeed(Util.Factory('BPMSpeed', ('value',))): pass
-    class MultiplySpeed(Util.Factory('MultiplySpeed', ('value',))): pass
+    class Twirl(Util.Factory()): pass
+    class BPMSpeed(Util.Factory('value')): pass
+    class MultiplySpeed(Util.Factory('value')): pass
 
     def getEvent(event):
       evt = event['eventType']

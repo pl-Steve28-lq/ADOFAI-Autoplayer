@@ -8,7 +8,7 @@ class Util:
         cls.Instance = cls(*args, **kwargs)
       return cls.Instance
 
-  def Factory(clsname, names=()):
+  def Factory(*names):
     def __init__(self, *args):
       nL, aL = map(len, (names, args))
       atval = []
@@ -39,14 +39,11 @@ class Util:
 
     def __str__(self):
       arg = ', '.join(f'{self.attrnames[i]}={self.attrs[i]}' for i in range(len(self.attrs)))
-      return f'{clsname}({arg})'
-
-    def __repr__(self):
-      return str(self)
+      return f'{type(self).__name__}({arg})'
     
-    return type(clsname, (Util._Factory,), {
+    return type('a', (Util._Factory,), {
       '__init__': __init__, '__eq__': __eq__, '__hash__': __hash__,
-      '__str__': __str__, '__repr__': __repr__
+      '__str__': __str__, '__repr__': __str__
     })
     
   class _Factory:
