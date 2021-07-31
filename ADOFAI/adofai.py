@@ -14,7 +14,11 @@ class ADOFAI:
           (event[floor][0], ADOFAI.Event.getEvent(i)) \
           if event.setdefault(floor) \
           else (ADOFAI.Event.getEvent(i),)
-      return self._analyze(level, event)
+      bpm = level['settings']['bpm']
+      offset = level['settings']['offset']
+      return ADOFAI.Level(
+        bpm, offset, self._analyze(level, event)
+      )
 
     def _analyze(self, level, event):
       if 'pathData' in level: return self.parseTile(level, event)
@@ -31,9 +35,12 @@ class ADOFAI:
         p = path[i]
         res.append(ADOFAI.Tile.get(angle[p], event[i+1], isMid))
         i += 1
-      return res
-        
+      return tuple(res)
 
+  class Level(Util.Factory(
+    'bpm', 'offset', 'tile'
+  )): pass
+  
   class Tile(Util.Factory(
     'angle', 'event', ('isMidspin', False)
   )):
@@ -56,4 +63,4 @@ class ADOFAI:
 
   File = File()
 
-if __name__ == '__main__': [*map(print,ADOFAI.File.open('../test.adofai'))]
+if __name__ == '__main__': [*map(print,ADOFAI.File.open('../test.adofai').tile)]
